@@ -15,7 +15,6 @@ const createUser = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (err: any) {
-    console.log(err);
     res.status(500).json({
       success: false,
       message: err.message || 'Something went wrong!',
@@ -24,6 +23,24 @@ const createUser = async (req: Request, res: Response) => {
   }
 };
 
+const getAllUsers = async (req: Request, res: Response) => {
+  try {
+    const result = await UserServices.getAllUsersFromDB();
+    res.status(200).json({
+      status: true,
+      message: 'Users are retrieved successfully!',
+      data: result,
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      status: false,
+      message: err.message || 'Something went wrong!',
+      error: err,
+    });
+  }
+};
+
 export const UserControllers = {
   createUser,
+  getAllUsers
 };
