@@ -81,6 +81,7 @@ const userSchema = new Schema<TUser, UserModel>({
     required: [true, 'Password is required'],
     trim: true,
     maxlength: [100, 'Password cannot exceed 100 characters'],
+    select: false,
   },
   fullName: { type: FullNameSchema, required: [true, 'Full name is required'] },
   age: {
