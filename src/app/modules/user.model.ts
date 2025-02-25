@@ -6,6 +6,8 @@ import {
   TUser,
   UserModel,
 } from './user/user.interface';
+import bcrypt from 'bcrypt';
+import config from '../config';
 
 const FullNameSchema = new Schema<TFullName>({
   firstName: {
@@ -102,6 +104,22 @@ const userSchema = new Schema<TUser, UserModel>({
   hobbies: { type: [String], required: [true, 'Hobbies are required'] },
   address: { type: AddressSchema, required: [true, 'Address is required'] },
   orders: { type: [OrderSchema], required: [true, 'Orders are required'] },
+});
+
+// Middlewares
+userSchema.pre('save', async function (next) {
+  const user = this;
+  user.password = await bcrypt.hash(
+    user.password,
+    Number(config.bcrypt_salt_rounds),
+  );
+
+  next();
+});
+
+userSchema.post('save', function (doc, next) {
+  doc.password = '';
+  next();
 });
 
 // Custom static method
