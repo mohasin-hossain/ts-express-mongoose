@@ -108,7 +108,7 @@ const userSchema = new Schema<TUser, UserModel>({
   isDeleted: { type: Boolean, default: false },
 });
 
-// Middlewares
+// Document Middlewares
 userSchema.pre('save', async function (next) {
   const user = this;
   user.password = await bcrypt.hash(
@@ -121,6 +121,22 @@ userSchema.pre('save', async function (next) {
 
 userSchema.post('save', function (doc, next) {
   doc.password = '';
+  next();
+});
+
+// Query Middlewares
+userSchema.pre('find', function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
+userSchema.pre('findOne', function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
+userSchema.pre('aggregate', function (next) {
+  this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
   next();
 });
 
