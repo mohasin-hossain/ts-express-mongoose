@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import UserValidationSchema from './user.validation';
 import { UserServices } from './user.service';
+import { ZodError } from 'zod';
 
 const createUser = async (req: Request, res: Response) => {
   try {
@@ -60,9 +61,38 @@ const getSingleUser = async (req: Request, res: Response) => {
     });
   }
 };
+// Define the possible error types
+const updateUser = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const updatedUser = await req.body;
+    const zodParsedUpdatedUser = UserValidationSchema.parse(updatedUser);
+
+    const result = await UserServices.updateUserIntoDB(
+      Number(userId),
+      zodParsedUpdatedUser,
+    );
+
+    res.status(200).json({
+      status: true,
+      message: 'User updated successfully',
+      data: result,
+    });
+  } catch (err: any) {
+    res.status(404).json({
+      status: false,
+      message: err.message || 'Something went wrong!',
+      error: {
+        code: 404,
+        description: 'User not found!',
+      },
+    });
+  }
+};
 
 export const UserControllers = {
   createUser,
   getAllUsers,
   getSingleUser,
+  updateUser,
 };

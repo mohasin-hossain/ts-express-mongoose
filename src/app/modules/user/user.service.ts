@@ -40,8 +40,41 @@ const getSingleUserFromDB = async (userId: number) => {
   }
 };
 
+const updateUserIntoDB = async (
+  userId: number,
+  updatedUser: Partial<TUser>,
+) => {
+  const existingUser = await User.isUserExists(userId);
+  if (!existingUser) throw new Error('User not found');
+
+  const result = await User.findOneAndUpdate(
+    { userId: userId },
+    {
+      $set: updatedUser,
+    },
+    {
+      new: true,
+      projection: {
+        userId: 1,
+        username: 1,
+        fullName: 1,
+        age: 1,
+        email: 1,
+        isActive: 1,
+        hobbies: 1,
+        address: 1,
+        _id: 0,
+      },
+      lean: true,
+    },
+  );
+
+  return result;
+};
+
 export const UserServices = {
   createUserIntoDB,
   getAllUsersFromDB,
   getSingleUserFromDB,
+  updateUserIntoDB,
 };
