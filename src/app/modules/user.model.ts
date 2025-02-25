@@ -105,6 +105,7 @@ const userSchema = new Schema<TUser, UserModel>({
   hobbies: { type: [String], required: [true, 'Hobbies are required'] },
   address: { type: AddressSchema, required: [true, 'Address is required'] },
   orders: { type: [OrderSchema], required: [true, 'Orders are required'] },
+  isDeleted: { type: Boolean, default: false },
 });
 
 // Middlewares
